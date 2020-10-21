@@ -213,7 +213,6 @@ ArvB* buscaNo(ArvB *no, int valor, int op){
 }
 
 
-
 //Função usada para ordenar os valores da pagina
 void ordenaPagina(ArvB *pagina, int valor, int vet[3]){
 
@@ -234,7 +233,7 @@ void ordenaPagina(ArvB *pagina, int valor, int vet[3]){
 void insereNo(ArvB *raiz, ArvB *pagina, int valor);
 
 // Função para dividir a pagina quando estiver cheia
-void dividePagina(ArvB *raiz, ArvB *pagina, ArvB *pagAnt, ArvB *novaPagina,  int valor){
+void dividePagina(ArvB *raiz, ArvB *pagina, ArvB *novaPagina,  int valor){
 
 
     //nova pagina
@@ -331,24 +330,33 @@ void dividePagina(ArvB *raiz, ArvB *pagina, ArvB *pagAnt, ArvB *novaPagina,  int
         //Pagina cheia chama recursão
         }else{
 
+
+            if(novaPagina != NULL){
+
+                if(valor < pagina->chave[0]){
+                    novaP1->filho[0] = pagina->filho[1];
+                    novaP1->filho[1] = pagina->filho[2];
+                    pagina->filho[1] = novaPagina;
+
+                }else if(valor > pagina->chave[1]){
+                    novaP1->filho[0] = pagina->filho[2];
+                    novaP1->filho[1] = novaPagina;
+
+                }else if(valor > pagina->chave[0] && valor < pagina->chave[1]){
+                    novaP1->filho[0] = novaPagina;
+                    novaP1->filho[1] = pagina->filho[2];
+                }
+                pagina->filho[2] = NULL;
+            }
+
             pagina->contChave -= 1;
             pagina->chave[1] = -1;
             pagina->chave[0] = vet[0];
             novaP1->chave[0] = vet[2];
 
-            if(novaPagina != NULL){
-                novaP1->filho[0] = pagina->filho[1];
-                novaP1->filho[1] = pagina->filho[2];
-                pagina->filho[1] = novaPagina;
-                pagina->filho[2] = NULL;
-            }
             pagina = buscaNo(raiz, pagina->chave[0], 1);
-            pagAnt = buscaNo(raiz, pagina->chave[0], 1);
-            /*
-            pagina = buscaNo_Ant(raiz, pagina->chave[0]);
-            pagAnt = buscaNo_Ant(raiz, pagina->chave[0]);
-            */
-            dividePagina(raiz, pagina, pagAnt, novaP1, vet[1]);
+
+            dividePagina(raiz, pagina, novaP1, vet[1]);
         }
     }
 }
@@ -377,7 +385,7 @@ void insereNo(ArvB *raiz, ArvB *pagina, int valor){
     //pagina cheia, dividi pagina
     }else{
 
-        dividePagina(raiz, pagina, NULL, NULL, valor);
+        dividePagina(raiz, pagina, NULL, valor);
     }
 }
 
@@ -410,26 +418,16 @@ int insere_ArvB(ArvB* raiz, int valor){
 //Remover elemento de um determinado no
 void removeNo(ArvB *raiz, ArvB *pagina, ArvB *pagAnt, int valor){
 
+    if(qtdFilhos(pagina) == 0){
+        if(pagina->contChave == ORDEM-1){
+            if(valor == pagina->chave[0]){
+                pagina->chave[0] = pagina->chave[1];
+            }
 
-    if(pagina->contChave == ORDEM-1){
-        if(raiz->chave[0] == valor){
-            raiz->chave[0] = raiz->chave[1];
-            raiz->chave[1] = -1;
-        }else{
-            raiz->chave[1] = -1;
-        }
-    }else if(pagina->ehRaiz == 0 && pagina->chave[1] == -1){
-
-        free(pagina);
-        if(valor < pagAnt->chave[0]){
-            raiz->filho[0] = NULL;
-        }else if(valor < pagAnt->chave[1] || pagAnt->chave[1] == -1){
-            pagAnt->filho[1] = NULL;
-        }else{
-            pagAnt->filho[2] = NULL;
+            pagina->chave[1] = -1;
+            pagina->contChave -= 1;
         }
     }
-    raiz->contChave--;
 }
 
 // Chama funação para remover chave
@@ -443,17 +441,11 @@ int remove_ArvB(ArvB *raiz, int valor){
     pagina = raiz;
     pagAnt = NULL;
 
-    if(qtdFilhos(raiz) == 0){
-        removeNo(raiz, pagina, pagAnt, valor);
+    pagina = buscaNo(raiz, valor, 0);
+    //pagAnt = buscaNo(raiz, valor, 1);
 
-    }else{
+    removeNo(raiz, pagina, pagAnt, valor);
 
-        pagina = buscaNo(raiz, valor, 0);
-        pagAnt = buscaNo(raiz, valor, 1);
-
-        removeNo(raiz, pagina, pagAnt, valor);
-
-    }
     return 1;
 }
 

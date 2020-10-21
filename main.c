@@ -1,14 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ArvoreB.h"
-
-/*
-Grupo
-Integrantes:
-Alberto Ferreira Neto - 11811BCC041
-Marillia Soares Rodrigues - 11821BCC020
-Pedro Henrique Gonçalves Teixeira - 11821BCC008
-*/
+#include "ArvoreB.h"
 
 //Tratamento de erro das funcoes
 void trataErro(int erro){
